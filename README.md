@@ -1,3 +1,5 @@
+[English Version](https://github.com/nmarsollier/go_rrouter_builder/blob/main/README_en.md)
+
 # Builder Pattern en Router
 
 ## Usar middlewares como Builder Pattern ?
@@ -123,4 +125,4 @@ func fetchUserInParallel(c *gin.Context) {
 
 Esta es una serie de notas sobre patrones simples de programación en GO.
 
-[Tabla de Contenidos](https://github.com/nmarsollier/go_index)
+[Tabla de Contenidos](https://github.com/nmarsollier/go_index/blob/main/README.md)

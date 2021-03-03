@@ -6,13 +6,13 @@
 
 En las notas previas vimos que podríamos usar el router para conformar una respuesta, si pensamos como funciona el patrón builder por ejemplo :
 
-```	
+```go
 dialog.NewBuilder().Title("hola").AcceptAction("Aceptar", "ok").Build()
 ```
 
 Esto podemos expresarlo en algo como :
 
-```
+```go
 	getRouter().GET(
 		"/dialog",
 		setTitle,
@@ -31,7 +31,7 @@ Supongamos un microservicio que pretende obtener información del usuario y del 
 
 Si bien, no es puntualmente el mismo caso de builder del ejemplo anterior, el uso del router es el mismo:
 
-```
+```go
 router().GET(
 	"/users/:id",
 	validateUserName,
@@ -47,7 +47,7 @@ Como ultimo paso en la función build armaremos la respuesta final.
 
 Las funciones fetchUser y fetchProfile, son simples, llaman a un servicio del negocio, y ponen los datos en el contexto de gin.
 
-```
+```go
 func fetchUser(c *gin.Context) {
 	c.Set("user", user.FetchUser())
 	c.Next()
@@ -58,7 +58,7 @@ NOTA: Mucho cuidado con el contexto del gin, solo debemos usarlo en el controlle
 
 Para armar nuestra respuesta, simplemente buscamos lo que tenemos en el contexto 
 
-```
+```go
 func build(c *gin.Context) {
 	user := c.MustGet("user").(*user.User)
 	profile := c.MustGet("profile").(*profile.Profile)
@@ -77,7 +77,7 @@ Las funciones en los services tienen un delay de 1 segundo, para simular una con
 
 Esto lo podemos resolver simplemente ejecutando los ruteos FETCH en forma paralela. En get_parallel_user_id.go vamos a hacer uso de las mismas funciones de ruteo, solo que llamaremos los Fetch en paralelo.
 
-```
+```go
 router().GET(
 	"/parallel/users/:id",
 	validateUserName,
@@ -91,7 +91,7 @@ router().GET(
 
 Debemos crear una función que nos permita la ejecución en paralelo, inParallel esta escrita simple, pero efectiva, el tiempo de respuesta es de 1 segundo, por lo que las llamadas remotas se ejecutan en paralelo.
 
-```
+```go
 func inParallel(handlers ...gin.HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var waitGroup sync.WaitGroup
@@ -115,7 +115,7 @@ Es genérica, por lo que debería estar en algún paquete de utilidades reutiliz
 
 En las funciones fetch, lo único a tener en cuenta es que ahora los handlers no llamaran a Next, porque lo hace inParallel.
 
-```
+```go
 func fetchUserInParallel(c *gin.Context) {
 	c.Set("user", user.FetchUser())
 }

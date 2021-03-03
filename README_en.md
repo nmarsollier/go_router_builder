@@ -6,13 +6,13 @@
 
 On previous notes we saw that we can use many handlers to prepare a result, if we think how a builder works :
 
-```	
+```go
 dialog.NewBuilder().Title("hola").AcceptAction("Aceptar", "ok").Build()
 ```
 
 That can be expressed in the route as :
 
-```
+```go
 	getRouter().GET(
 		"/dialog",
 		setTitle,
@@ -29,7 +29,7 @@ Lets suppose a route that wants to mix user and profile information, in the same
 
 It's not exactly the same case as previous but the solution is the same:
 
-```
+```go
 router().GET(
 	"/users/:id",
 	validateUserName,
@@ -45,7 +45,7 @@ Finally we build the response.
 
 Functions fetchUser y fetchProfile, are simple, the call the model, and put the result in the context.
 
-```
+```go
 func fetchUser(c *gin.Context) {
 	c.Set("user", user.FetchUser())
 	c.Next()
@@ -61,7 +61,7 @@ Caution adding data to go context, we should use them only in controllers, we ca
 
 To build the response we get data from context, and put al the data in the response. 
 
-```
+```go
 func build(c *gin.Context) {
 	user := c.MustGet("user").(*user.User)
 	profile := c.MustGet("profile").(*profile.Profile)
@@ -80,7 +80,7 @@ Model functions contains 1 second delay to simulate along call, If we check the 
 
 We can call both calls in parallel using this single trick:
 
-```
+```go
 router().GET(
 	"/parallel/users/:id",
 	validateUserName,
@@ -94,7 +94,7 @@ router().GET(
 
 we need to code a function to run in parallel, inParallel it is a simple function but effective, response time now is around 1 second.
 
-```
+```go
 func inParallel(handlers ...gin.HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var waitGroup sync.WaitGroup
@@ -116,7 +116,7 @@ func inParallel(handlers ...gin.HandlerFunc) gin.HandlerFunc {
 
 The only thing to notice, is that fetch functions does not call Next, because  inParallel does that at the end.
 
-```
+```go
 func fetchUserInParallel(c *gin.Context) {
 	c.Set("user", user.FetchUser())
 }
